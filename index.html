@@ -2,44 +2,44 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Subnet Generator</title>
+    <title>Subnetting Calculator - Final Edition</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; padding: 20px; color: #333; }
-        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; padding: 20px; color: #333; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 2px solid #eee; margin-bottom: 25px; padding-bottom: 10px; }
         
-        .input-section { display: flex; gap: 15px; margin-bottom: 25px; align-items: flex-end; background: #fff; border: 1px solid #ddd; padding: 20px; border-radius: 10px; }
+        .input-section { display: flex; gap: 15px; margin-bottom: 25px; background: #ffffff; border: 1px solid #ddd; padding: 20px; border-radius: 10px; }
         .input-group { display: flex; flex-direction: column; flex: 1; }
-        label { font-weight: bold; margin-bottom: 8px; font-size: 14px; }
-        input { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; transition: border 0.3s; }
+        label { font-weight: bold; margin-bottom: 8px; font-size: 14px; color: #555; }
+        input { padding: 12px; border: 2px solid #eee; border-radius: 6px; font-size: 16px; transition: 0.3s; }
         input:focus { border-color: #007bff; outline: none; }
-        button { padding: 12px 25px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; }
-        button:hover { background: #218838; }
+        button { padding: 12px 25px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0056b3; }
 
-        .meta-info { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 20px; 
-            margin-bottom: 30px; 
-            padding: 20px; 
-            background: #eef2f7; 
-            border-radius: 10px; 
-            border-left: 6px solid #007bff;
-        }
-        .meta-item { margin-bottom: 10px; }
-        .formula { font-family: 'Courier New', monospace; background: #d1dce7; padding: 2px 5px; border-radius: 4px; font-weight: bold; }
-
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
-        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: center; }
-        th { background: #007bff; color: white; font-size: 14px; }
+        .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        .card { background: #fff; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; border-top: 5px solid #007bff; }
+        .card h3 { margin-top: 0; color: #007bff; font-size: 16px; text-transform: uppercase; }
+        
+        .formula { font-family: 'Courier New', monospace; font-weight: bold; color: #d63384; background: #f8f9fa; padding: 2px 4px; }
+        .binary { font-family: monospace; font-size: 13px; color: #666; background: #f1f1f1; padding: 10px; border-radius: 5px; display: block; margin-top: 5px; word-break: break-all; }
+        
+        /* Gaya baru untuk deskripsi range per blok */
+        .range-box { margin-top: 15px; padding: 15px; background: #fff9db; border-radius: 8px; border: 1px solid #fab005; }
+        .range-box h4 { margin: 0 0 10px 0; color: #e67e22; font-size: 14px; }
+        .range-text { font-size: 14px; line-height: 1.6; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
+        th { background: #007bff; color: white; }
         .current-block { background: #fff3cd !important; font-weight: bold; }
-        .binary-text { font-family: monospace; font-size: 13px; color: #555; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Kalkulator Subnetting</h2>
+    <div class="header">
+        <h2>Kalkulator Subnetting</h2>
+    </div>
     
     <div class="input-section">
         <div class="input-group">
@@ -50,32 +50,46 @@
             <label>Prefix (CIDR)</label>
             <input type="number" id="cidr">
         </div>
-        <button onclick="calculate()">Generate Analisis</button>
+        <button onclick="calculate()">Hitung</button>
     </div>
 
-    <div id="meta" class="meta-info" style="display:none">
-        <div class="meta-left">
-            <div class="meta-item"><b>Biner Subnet Mask:</b><br><span id="binMask" class="binary-text"></span></div>
-            <div class="meta-item"><b>Subnet Mask (Desimal):</b> <span id="decMask"></span></div>
-        </div>
-        <div class="meta-right">
-            <div class="meta-item"><b>Jumlah Blok:</b> <span id="blockFormula" class="formula"></span> = <span id="totalBlocks"></span></div>
-            <div class="meta-item"><b>Total IP per Blok:</b> <span id="hostFormula" class="formula"></span> = <span id="usableHosts"></span></div>
-        </div>
-    </div>
+    <div id="results" style="display:none">
+        <div class="analysis-grid">
+            <div class="card">
+                <h3>Informasi Kelas IP</h3>
+                <p>Identifikasi Oktet Pertama: <span id="firstOctet" class="formula"></span></p>
+                <p>Kelas IP: <b id="ipClass"></b></p>
+                <p>Rentang Default: <span id="classRange"></span></p>
+                <p>Subnet Mask (Biner): <span id="binMask" class="binary"></span></p>
+            </div>
 
-    <table id="resultTable" style="display:none">
-        <thead>
-            <tr>
-                <th>Blok</th>
-                <th>IP Network</th>
-                <th>IP Awal Host</th>
-                <th>IP Akhir Host</th>
-                <th>IP Broadcast</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-    </table>
+            <div class="card">
+                <h3>Perhitungan</h3>
+                <p>Jumlah Bit Subnet (n): <span id="valN" class="formula"></span></p>
+                <p>Jumlah Bit Host (h): <span id="valH" class="formula"></span></p>
+                <p>Jumlah Blok: <span id="blockCalc" class="formula"></span> = <b id="totalBlocks"></b></p>
+                <p>Host per Blok: <span id="hostCalc" class="formula"></span> = <b id="usableHosts"></b></p>
+                
+                <div class="range-box">
+                    <h4>Deskripsi Range IP Per Blok:</h4>
+                    <div id="dynamicRangeDesc" class="range-text"></div>
+                </div>
+            </div>
+        </div>
+
+        <table id="resultTable">
+            <thead>
+                <tr>
+                    <th>Blok</th>
+                    <th>IP Network</th>
+                    <th>IP Awal Host</th>
+                    <th>IP Akhir Host</th>
+                    <th>IP Broadcast</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
 </div>
 
 <script>
@@ -83,65 +97,85 @@ function calculate() {
     const rawIp = document.getElementById('ip').value.trim();
     const cidr = parseInt(document.getElementById('cidr').value);
     
-    if (!rawIp || isNaN(cidr) || cidr < 0 || cidr > 32) return alert("Input tidak valid!");
+    if (!rawIp || isNaN(cidr)) return;
 
     const parts = rawIp.split('.').map(Number);
     let ipNum = ((parts[0] << 24) >>> 0) | (parts[1] << 16) | (parts[2] << 8) | parts[3];
-    
     const mask = (cidr === 0) ? 0 : ((-1 << (32 - cidr)) >>> 0);
-    const totalAddrs = Math.pow(2, 32 - cidr);
-    
-    // Tentukan Kelas dan Network Dasar
-    let startNetNum, defaultPrefix;
-    if (parts[0] < 128) { startNetNum = (parts[0] << 24) >>> 0; defaultPrefix = 8; }
-    else if (parts[0] < 192) { startNetNum = ((parts[0] << 24) | (parts[1] << 16)) >>> 0; defaultPrefix = 16; }
-    else { startNetNum = ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8)) >>> 0; defaultPrefix = 24; }
 
-    // Hitung Bit Subnet (n) dan Bit Host (h)
-    const n = cidr - defaultPrefix;
+    let ipClass, classRange, defaultPrefix, startNetNum, targetOctet;
+    const first = parts[0];
+
+    // Logika Kelas IP
+    if (first >= 1 && first <= 126) {
+        ipClass = "Kelas A"; classRange = "1.x.x.x - 126.x.x.x"; defaultPrefix = 8;
+        startNetNum = (parts[0] << 24) >>> 0;
+        targetOctet = "kedua";
+    } else if (first >= 128 && first <= 191) {
+        ipClass = "Kelas B"; classRange = "128.x.x.x - 191.x.x.x"; defaultPrefix = 16;
+        startNetNum = ((parts[0] << 24) | (parts[1] << 16)) >>> 0;
+        targetOctet = "ketiga";
+    } else if (first >= 192 && first <= 223) {
+        ipClass = "Kelas C"; classRange = "192.x.x.x - 223.x.x.x"; defaultPrefix = 24;
+        startNetNum = ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8)) >>> 0;
+        targetOctet = "keempat";
+    }
+
+    const n = Math.max(0, cidr - defaultPrefix);
     const h = 32 - cidr;
-    const numBlocks = (n < 0) ? 1 : Math.pow(2, n);
+    const totalBlocks = Math.pow(2, n);
+    const totalAddrs = Math.pow(2, h);
+    
+    // Hitung Interval (Lompatan Blok)
+    // Untuk CIDR 11 di Kelas A, lompatan ada di oktet ke-2
+    const interval = Math.pow(2, 24 - (cidr > 24 ? 32 : cidr > 16 ? 24 : 16 === 16 ? 16 : 8)); 
+    // Perbaikan logika interval sederhana untuk tampilan:
+    let jumpValue;
+    if(cidr <= 16) jumpValue = Math.pow(2, 16-cidr);
+    else if(cidr <= 24) jumpValue = Math.pow(2, 24-cidr);
+    else jumpValue = Math.pow(2, 32-cidr);
 
-    const toIP = (n) => [ (n >>> 24) & 0xff, (n >>> 16) & 0xff, (n >>> 8) & 0xff, n & 0xff ].join('.');
-    const toBin = (n) => {
-        let b = (n >>> 0).toString(2).padStart(32, '0');
-        return b.match(/.{8}/g).join('.');
-    };
-
-    // Update Meta Info
-    document.getElementById('binMask').innerText = toBin(mask);
-    document.getElementById('decMask').innerText = toIP(mask);
-    document.getElementById('blockFormula').innerText = `2^${n < 0 ? 0 : n}`;
-    document.getElementById('totalBlocks').innerText = numBlocks;
-    document.getElementById('hostFormula').innerText = `2^${h} - 2`;
+    document.getElementById('firstOctet').innerText = first;
+    document.getElementById('ipClass').innerText = ipClass;
+    document.getElementById('classRange').innerText = classRange;
+    document.getElementById('valN').innerText = n;
+    document.getElementById('valH').innerText = h;
+    document.getElementById('blockCalc').innerText = `2^${n}`;
+    document.getElementById('totalBlocks').innerText = totalBlocks;
+    document.getElementById('hostCalc').innerText = `2^${h} - 2`;
     document.getElementById('usableHosts').innerText = (totalAddrs - 2).toLocaleString();
-    document.getElementById('meta').style.display = 'grid';
+    
+    const toBin = (n) => (n >>> 0).toString(2).padStart(32, '0').match(/.{8}/g).join('.');
+    document.getElementById('binMask').innerText = toBin(mask);
 
-    // Generate Tabel
+    // Update Deskripsi Range Spesifik
+    document.getElementById('dynamicRangeDesc').innerHTML = `
+        IP Network setiap blok memiliki kelipatan <b>${jumpValue}</b> pada oktet <b>${targetOctet}</b>.<br>
+        Contoh: <b>${parts[0]}.0.0.0</b>, <b>${parts[0]}.${jumpValue}.0.0</b>, <b>${parts[0]}.${jumpValue * 2}.0.0</b>, dst.<br>
+        Setiap blok menampung <b>${totalAddrs.toLocaleString()}</b> total alamat IP.
+    `;
+
+    const toIP = (n) => [(n >>> 24) & 0xff, (n >>> 16) & 0xff, (n >>> 8) & 0xff, n & 0xff].join('.');
+    const targetNet = (ipNum & mask) >>> 0;
     let html = '';
     let currentNet = startNetNum;
-    const targetNet = (ipNum & mask) >>> 0;
 
-    for (let i = 1; i <= numBlocks; i++) {
+    for (let i = 1; i <= totalBlocks; i++) {
         let net = currentNet >>> 0;
-        let first = (net + 1) >>> 0;
-        let last = (net + totalAddrs - 2) >>> 0;
-        let broad = (net + totalAddrs - 1) >>> 0;
         let isTarget = (net === targetNet) ? 'class="current-block"' : '';
-
         html += `<tr ${isTarget}>
             <td>${i}</td>
             <td>${toIP(net)}</td>
-            <td>${toIP(first)}</td>
-            <td>${toIP(last)}</td>
-            <td>${toIP(broad)}</td>
+            <td>${toIP(net + 1)}</td>
+            <td>${toIP(net + totalAddrs - 2)}</td>
+            <td>${toIP(net + totalAddrs - 1)}</td>
         </tr>`;
         currentNet = (currentNet + totalAddrs) >>> 0;
-        if (i >= 512) break; // Safety limit
+        if (i >= 256) break;
     }
 
     document.getElementById('tableBody').innerHTML = html;
-    document.getElementById('resultTable').style.display = 'table';
+    document.getElementById('results').style.display = 'block';
 }
 </script>
 </body>
