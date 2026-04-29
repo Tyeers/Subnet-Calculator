@@ -157,7 +157,7 @@ function calculate() {
     // Render Tabel (Dibatasi agar tidak berat)
     let html = '';
     let tableStartNet = currentNetworkNum; 
-    const displayLimit = Math.min(totalBlocks, 10); // Menampilkan 10 blok mulai dari IP input
+    const displayLimit = Math.min(totalBlocks, 256); // Menampilkan maksimal 256 blok mulai dari IP input
 
     for (let i = 1; i <= displayLimit; i++) {
         let net = tableStartNet >>> 0;
